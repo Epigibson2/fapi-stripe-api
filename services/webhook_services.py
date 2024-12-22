@@ -63,22 +63,59 @@ class WebhookServices:
         event_type = event.get("type")
         data = event.get("data", {}).get("object", {})
 
-        # Manejo de eventos específicos
-        if event_type == "payment_intent.succeeded":
-            return {"message": "Pago exitoso procesado", "data": data}
+        # Diccionario de eventos y funciones asociadas
+        event_handlers = {
+            "payment_intent.succeeded": WebhookServices.handle_payment_intent_succeeded,
+            "checkout.session.completed": WebhookServices.handle_checkout_session_completed,
+            "customer.subscription.created": WebhookServices.handle_subscription_created,
+            "product.updated": WebhookServices.handle_product_updated,
+            "price.updated": WebhookServices.handle_price_updated,
+            # Agrega aquí más eventos según sea necesario
+        }
 
-        elif event_type == "invoice.payment_succeeded":
-            return {"message": "Pago de factura exitoso", "data": data}
-
-        elif event_type == "customer.subscription.created":
-            return {"message": "Suscripción creada", "data": data}
-
-        elif event_type == "product.updated":
-            return {"message": "Producto actualizado", "data": data}
-
-        elif event_type == "price.updated":
-            return {"message": "Precio actualizado", "data": data}
-
+        # Llama a la función asociada al evento si existe
+        handler = event_handlers.get(event_type)
+        if handler:
+            return await handler(data)
         else:
-            # Otros eventos no manejados específicamente
             return {"message": f"Evento {event_type} no manejado", "data": data}
+
+    @staticmethod
+    async def handle_payment_intent_succeeded(data: dict):
+        """
+        Maneja el evento 'payment_intent.succeeded'.
+        """
+        print(f"Pago exitoso: {data}")
+        return {"message": "Pago exitoso procesado", "data": data}
+
+    @staticmethod
+    async def handle_checkout_session_completed(data: dict):
+        """
+        Maneja el evento 'checkout.session.completed'.
+        """
+        print(f"Sesión completada: {data}")
+        return {"message": "Sesión de checkout completada", "data": data}
+
+    @staticmethod
+    async def handle_subscription_created(data: dict):
+        """
+        Maneja el evento 'customer.subscription.created'.
+        """
+        print(f"Suscripción creada: {data}")
+        return {"message": "Suscripción creada correctamente", "data": data}
+
+    @staticmethod
+    async def handle_product_updated(data: dict):
+        """
+        Maneja el evento 'product.updated'.
+        """
+        print(f"Producto actualizado: {data}")
+        return {"message": "Producto actualizado", "data": data}
+
+    @staticmethod
+    async def handle_price_updated(data: dict):
+        """
+        Maneja el evento 'price.updated'.
+        """
+        print(f"Precio actualizado: {data}")
+        return {"message": "Precio actualizado", "data": data}
