@@ -1,33 +1,100 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
+from schemas.payment_schemas import PaymentIntentCreate, ChargeCreate, SetupIntentCreate, \
+    RefundCreate
+from services.payment_services import PaymentServices
 
 payment_router = APIRouter()
 
 
-@payment_router.get("/", summary="Get all Stripe payments", tags=["Payment"])
-async def get_all_payments():
-    # Logic to fetch all payments from Stripe
-    return {"message": "All Stripe payments fetched successfully"}
+# STRIPE PAYMENT INTENT SERVICES
+
+@payment_router.post("/payment-intent", summary="Create Stripe Payment Intent", tags=["Payment"])
+async def create_payment_intent(payment_data: PaymentIntentCreate):
+    try:
+        result = await PaymentServices.create_payment_intent(payment_data)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@payment_router.get("/{payment_id}", summary="Get a Stripe payment by ID", tags=["Payment"])
-async def get_payment_by_id(payment_id: str):
-    # Logic to fetch a payment by ID from Stripe
-    return {"message": f"Stripe payment with ID {payment_id} fetched successfully"}
+@payment_router.get("/payment-intent/{payment_intent_id}", summary="Get Stripe Payment Intent",
+                    tags=["Payment"])
+async def retrieve_payment_intent(payment_intent_id: str):
+    try:
+        result = await PaymentServices.retrieve_payment_intent(payment_intent_id)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@payment_router.post("/", summary="Create a Stripe payment", tags=["Payment"])
-async def create_payment():
-    # Logic to create a new payment on Stripe
-    return {"message": "Stripe payment created successfully"}
+# STRIPE SETUP INTENT SERVICES
+
+@payment_router.post("/setup-intent", summary="Create Setup Intent", tags=["Payment"])
+async def create_setup_intent(payment_data: SetupIntentCreate):
+    try:
+        result = await PaymentServices.create_payment_intent(payment_data)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@payment_router.put("/{payment_id}", summary="Update a Stripe payment", tags=["Payment"])
-async def update_payment(payment_id: str):
-    # Logic to update a payment on Stripe
-    return {"message": f"Stripe payment with ID {payment_id} updated successfully"}
+@payment_router.get("/setup-intent/{setup_intent_id}", summary="Get Stripe Setup Intent",
+                    tags=["Payment"])
+async def retrieve_setup_intent(setup_intent_id: str):
+    try:
+        result = await PaymentServices.retrieve_setup_intent(setup_intent_id)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@payment_router.delete("/{payment_id}", summary="Delete a Stripe payment", tags=["Payment"])
-async def delete_payment(payment_id: str):
-    # Logic to delete a payment from Stripe
-    return {"message": f"Stripe payment with ID {payment_id} deleted successfully"}
+# STRIPE SETUP CHARGE SERVICES
+
+
+@payment_router.post("/charge", summary="Create Stripe Charge", tags=["Payment"])
+async def create_charge(charge_data: ChargeCreate):
+    try:
+        result = await PaymentServices.create_charge(charge_data)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@payment_router.get("/charge/{charge_id}", summary="Get Stripe Charge",
+                    tags=["Payment"])
+async def retrieve_charge(charge_id: str):
+    try:
+        result = await PaymentServices.retrieve_charge(charge_id)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+# STRIPE SETUP REFUND SERVICES
+
+
+@payment_router.post("/refund", summary="Create Stripe Refund", tags=["Payment"])
+async def create_refund(refund_data: RefundCreate):
+    try:
+        result = await PaymentServices.create_refund(refund_data)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@payment_router.get("/refund/{refund_id}", summary="Get Stripe Refund",
+                    tags=["Payment"])
+async def retrieve_refund(refund_id: str):
+    try:
+        result = await PaymentServices.retrieve_refund(refund_id)
+        return result
+    except Exception as e:
+        # Handle exceptions, e.g., log the error
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
