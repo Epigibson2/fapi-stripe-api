@@ -3,7 +3,7 @@ from fastapi import APIRouter
 health_check_router = APIRouter()
 
 
-@health_check_router.get("/health-check",  summary="Health Check", tags=["Health-Check"])
+@health_check_router.get("/",  summary="Health Check", tags=["Health-Check"])
 async def health_check():
     try:
         # Lógica de verificación de salud
